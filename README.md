@@ -10,7 +10,7 @@ Minimum version of neovim: 0.9.0
 - https://rr-project.org/
 - https://www.rust-lang.org/
 - https://stedolan.github.io/jq
-- https://www.linux.org/
+- https://www.linux.org/ (this is not tested with Win, OSX, etc - it might work tho)
 
 ```vim
 packadd termdebug
@@ -38,4 +38,29 @@ To debug the test, run:
 :lua require('rrust').RustRRTestReplay()
 ```
 
-![demo](https://user-images.githubusercontent.com/8730839/231110925-8f581b74-ef5c-46cb-aaca-54b8b9896254.gif)
+## Etc
+
+I created the following convenience bindings:
+
+```vim
+function! NewRRDebug()
+    lua require('rrust').RustRRTestRecord()
+    lua require('rrust').RustRRTestReplay()
+    wincmd L
+    wincmd h
+    vertical resize 73
+    wincmd l
+    stopinsert
+endfunction
+
+nnoremap <F4> :Stop<cr>
+nnoremap <F5> :Continue<cr>
+nnoremap <F6> :Finish<cr>
+nnoremap <F7> :Step<cr>
+nnoremap <F8> :Over<cr>
+nnoremap <F9> :Break<cr>
+nnoremap <F10> :Clear<cr>
+nnoremap <leader>ed :call NewRRDebug()<cr>
+```
+
+![output](https://user-images.githubusercontent.com/8730839/231178300-5d999d5f-b0cd-48ad-a218-1836f0ac4521.gif)

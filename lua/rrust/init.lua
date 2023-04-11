@@ -131,7 +131,7 @@ M.RustRRTestRecord = function(args, env)
     if f ~= nil then
         io.close(f)
     else
-        local cmd = env .. "cargo test --manifest-path " .. manifest_path .. " -q " .. args .. " " .. function_name
+        local cmd = env .. " cargo test --manifest-path " .. manifest_path .. " -q " .. args .. " " .. function_name
         os.execute(cmd)
         local f = io.open(path, "r")
         if f == nil then
