@@ -104,8 +104,9 @@ M.RustRRTestRecord = function(args, env)
 
     -- pick a binary path
     local cmd = env ..
-    " cargo test --no-run --message-format=json --manifest-path " ..
-    manifest_path .. " -q " .. args .. " | jq -r 'select(.profile.test == true and .executable != null) | .executable'"
+        " cargo test --no-run --message-format=json --manifest-path " ..
+        manifest_path ..
+        " -q " .. args .. " | jq -r 'select(.profile.test == true and .executable != null) | .executable'"
     local paths = {}
     for path in io.popen(cmd):lines() do
         if not string.match(path, "^%s*$") then
@@ -114,7 +115,14 @@ M.RustRRTestRecord = function(args, env)
     end
     local path
     if #paths > 1 then
-        local choice = vim.fn.inputlist(paths)
+        local choices = {}
+        for i, p in ipairs(paths) do
+            choices[i] = "[" .. i .. "] " .. p
+        end
+        local choice = vim.fn.inputlist(choices)
+        if choice == nil or choice == 0 then
+            return false
+        end
         path = paths[choice]
     elseif #paths == 1 then
         path = paths[1]
