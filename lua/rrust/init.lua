@@ -20,22 +20,18 @@ local get_test_function_name = function()
 
     -- loop until find a function item; if hit root, abort
     while (node ~= nil and node ~= root) do
-
         -- find attribute item `test`
         if node:type() == "function_item" then
-
             -- scan for attribute sibling; halt on another function declaration
             -- this is a naive approach because other valid tokens might exist before the attribute
             local attribute_item = node:prev_named_sibling()
             while (attribute_item ~= nil) do
-
                 -- another function has been found; halt
                 if attribute_item:type() == "function_item" then
                     print("The Rust function is not a test")
 
-                -- if attribute_item, scan for a test directive
+                    -- if attribute_item, scan for a test directive
                 elseif attribute_item:type() == "attribute_item" then
-
                     -- fetch the attribute text and check if equals test
                     for attribute, _ in attribute_item:iter_children() do
                         if attribute:named() and attribute:type() == "attribute" then
@@ -44,7 +40,6 @@ local get_test_function_name = function()
                             end
                         end
                     end
-
                 end
 
                 -- not found yet; continue backtracking
@@ -108,7 +103,9 @@ M.RustRRTestRecord = function(args, env)
     end
 
     -- pick a binary path
-    local cmd = env .. "cargo test --no-run --message-format=json --manifest-path " .. manifest_path .. " -q " .. args .. " | jq -r 'select(.profile.test == true and .executable != null) | .executable'"
+    local cmd = env ..
+    " cargo test --no-run --message-format=json --manifest-path " ..
+    manifest_path .. " -q " .. args .. " | jq -r 'select(.profile.test == true and .executable != null) | .executable'"
     local paths = {}
     for path in io.popen(cmd):lines() do
         if not string.match(path, "^%s*$") then
@@ -131,9 +128,9 @@ M.RustRRTestRecord = function(args, env)
     if f ~= nil then
         io.close(f)
     else
-        local cmd = env .. " cargo test --manifest-path " .. manifest_path .. " -q " .. args .. " " .. function_name
+        cmd = env .. " cargo test --manifest-path " .. manifest_path .. " -q " .. args .. " " .. function_name
         os.execute(cmd)
-        local f = io.open(path, "r")
+        f = io.open(path, "r")
         if f == nil then
             error("Could not find test binary path " .. path)
         end
@@ -141,9 +138,11 @@ M.RustRRTestRecord = function(args, env)
     end
 
     -- run the rr debug
-    local cmd = "rr record -n " .. path .. " " .. function_name
+    cmd = "rr record -n " .. path .. " " .. function_name
     local result = os.execute(cmd) == 0
-    print("Recorded test `" .. function_name .. "` with result `" .. tostring(result) .."`")
+    print("Recorded test `" .. function_name .. "` with result `" .. tostring(result) .. "`")
+
+    return true
 end
 
 M.RustRRTestReplay = function()
@@ -155,7 +154,7 @@ M.RustRRTestReplay = function()
     vim.api.nvim_command(":tabnew")
 
     -- use RR as TermDebug backend
-    vim.g.termdebugger = {'rr', 'replay', '--'}
+    vim.g.termdebugger = { 'rr', 'replay', '--' }
 
     -- invoke the interface
     vim.cmd("Termdebug")

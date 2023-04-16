@@ -40,27 +40,33 @@ To debug the test, run:
 
 ## Etc
 
-I created the following convenience bindings:
+I created the following convenience setup:
 
-```vim
-function! NewRRDebug()
-    lua require('rrust').RustRRTestRecord()
-    lua require('rrust').RustRRTestReplay()
-    wincmd L
-    wincmd h
-    vertical resize 73
-    wincmd l
-    stopinsert
-endfunction
+```lua
+local rrust = require('rrust')
 
-nnoremap <F4> :Stop<cr>
-nnoremap <F5> :Continue<cr>
-nnoremap <F6> :Finish<cr>
-nnoremap <F7> :Step<cr>
-nnoremap <F8> :Over<cr>
-nnoremap <F9> :Break<cr>
-nnoremap <F10> :Clear<cr>
-nnoremap <leader>ed :call NewRRDebug()<cr>
+vim.cmd('packadd termdebug')
+
+vim.keymap.set("n", "<leader>ed", function()
+    if rrust.RustRRTestRecord() then
+        rrust.RustRRTestReplay()
+        vim.cmd([[
+            wincmd L
+            wincmd h
+            vertical resize 73
+            wincmd l
+            stopinsert
+        ]])
+    end
+end)
+
+vim.keymap.set('n', '<F4>', function() vim.cmd('Stop') end)
+vim.keymap.set('n', '<F5>', function() vim.cmd('Continue') end)
+vim.keymap.set('n', '<F6>', function() vim.cmd('Finish') end)
+vim.keymap.set('n', '<F7>', function() vim.cmd('Step') end)
+vim.keymap.set('n', '<F8>', function() vim.cmd('Over') end)
+vim.keymap.set('n', '<F9>', function() vim.cmd('Break') end)
+vim.keymap.set('n', '<F10>', function() vim.cmd('Evaluate') end)
 ```
 
 ![output](https://user-images.githubusercontent.com/8730839/231178300-5d999d5f-b0cd-48ad-a218-1836f0ac4521.gif)
